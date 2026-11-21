@@ -1,4 +1,4 @@
-// The Starling Archive — sight and hearing.
+// The Starling Archive: sight and hearing.
 // A guard sees you only when you are inside the vision cone AND the straight
 // line between you has no wall or crate in the way. Cover really works.
 import { TILE, VISION_RANGE, VISION_HALF_ANGLE } from './config.js';
@@ -41,7 +41,6 @@ export function angleDiff(a, b) {
   return d;
 }
 
-// Full cone test: range, angle, then line of sight.
 export function canSee(world, guard, px, py) {
   const dx = px - guard.x;
   const dy = py - guard.y;

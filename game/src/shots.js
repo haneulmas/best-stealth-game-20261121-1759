@@ -1,4 +1,4 @@
-// The Starling Archive — deterministic screenshot staging.
+// The Starling Archive: deterministic screenshot staging.
 // ?shot=start  title screen
 // ?shot=play   mid-level: Wren behind a crate, a warden's cone sweeping past
 // ?shot=alert  alarm up, a warden chasing, detection meter full
@@ -35,7 +35,7 @@ export function applyShot(game, params) {
     game.guards[3].y = 13 * 40 + 20;
     game.guards[3].facing = Math.PI;
     game.detection = 38;
-    game.message = 'A warden patrols the Stacks — wait for the cone to pass.';
+    game.message = 'A warden patrols the Stacks. Wait for the cone to pass.';
     game.messageTimer = 99;
     return true;
   }
@@ -56,7 +56,7 @@ export function applyShot(game, params) {
     game.alarm = true;
     game.alarmTimer = 5;
     game.alarms = 1;
-    game.message = 'SPOTTED! Run for shadow — break line of sight!';
+    game.message = 'SPOTTED! Run for shadow and break line of sight!';
     game.messageTimer = 99;
     return true;
   }

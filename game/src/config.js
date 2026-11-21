@@ -1,4 +1,4 @@
-// The Starling Archive — shared tuning numbers for the whole game.
+// The Starling Archive: shared tuning numbers for the whole game.
 // One place for every speed, range and rate, so balancing is a single edit.
 export const TILE = 40;
 export const VIEW_W = 1280;

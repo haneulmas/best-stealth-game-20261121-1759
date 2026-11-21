@@ -1,4 +1,4 @@
-// The Starling Archive — every sound is synthesized with WebAudio.
+// The Starling Archive: every sound is synthesized with WebAudio.
 // No audio files, no network: footsteps, chimes, alarm stings and the
 // low archive drone are all oscillators and noise shaped in code.
 export class SoundBank {

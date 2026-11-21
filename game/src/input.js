@@ -1,4 +1,4 @@
-// The Starling Archive — keyboard and mouse input.
+// The Starling Archive: keyboard and mouse input.
 // WASD / arrows to move, Shift to sneak, click to throw a pebble,
 // M to mute, P or Esc to pause, Enter to start.
 export class Input {

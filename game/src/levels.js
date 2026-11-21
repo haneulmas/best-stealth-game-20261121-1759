@@ -1,4 +1,4 @@
-// The Starling Archive — the three levels.
+// The Starling Archive: the three levels.
 // Each level is built from rectangles instead of hand-counted ASCII maps,
 // so a wall is never one tile off. Legend used by the builder:
 //   '#' wall (blocks movement and sight)   'X' crate (blocks movement and sight)
@@ -41,7 +41,7 @@ function buildLevel(def) {
 // Guard patrols are tile waypoints the guard walks in a loop.
 export const LEVELS = [
   buildLevel({
-    name: 'Level 1 — The Reading Room',
+    name: 'Level 1: The Reading Room',
     subtitle: 'Two wardens. Learn their patrols, take both relics, slip out.',
     start: [2, 15],
     exit: [29, 2],
@@ -59,8 +59,8 @@ export const LEVELS = [
     ],
   }),
   buildLevel({
-    name: 'Level 2 — The Stacks',
-    subtitle: 'Four wardens between the shelves. Pebbles distract — click to throw.',
+    name: 'Level 2: The Stacks',
+    subtitle: 'Four wardens between the shelves. Pebbles distract. Click to throw.',
     start: [2, 2],
     exit: [29, 15],
     relics: [[8, 8], [16, 14], [25, 4]],
@@ -78,7 +78,7 @@ export const LEVELS = [
     ],
   }),
   buildLevel({
-    name: 'Level 3 — The Vault',
+    name: 'Level 3: The Vault',
     subtitle: 'Five wardens, tight patrols. Ghost it: no alarm, no catch.',
     start: [2, 9],
     exit: [29, 9],

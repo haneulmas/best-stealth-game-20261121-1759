@@ -1,4 +1,4 @@
-// The Starling Archive — the game itself.
+// The Starling Archive: the game itself.
 // State machine: title -> playing -> (paused | levelComplete | caught)
 // -> victory. Detection is one shared meter: any guard who sees Wren
 // fills it; at 100 the alarm sounds, guards chase, and a catch costs
@@ -104,7 +104,7 @@ export class Game {
       const relic = this.world.collectRelics(this.player);
       if (relic) {
         this.sounds.pickup();
-        this.message = this.world.relicsLeft === 0 ? 'All relics taken — reach the EXIT!' : `Relic taken — ${this.world.relicsLeft} left.`;
+        this.message = this.world.relicsLeft === 0 ? 'All relics taken. Reach the EXIT!' : `Relic taken. ${this.world.relicsLeft} left.`;
         this.messageTimer = 3;
       }
       if (this.world.atExit(this.player)) {
@@ -188,7 +188,7 @@ export class Game {
         this.alarms += 1;
         this.sounds.spotted();
         this.sounds.alarm();
-        this.message = 'SPOTTED! Run for shadow — break line of sight!';
+        this.message = 'SPOTTED! Run for shadow and break line of sight!';
         this.messageTimer = 3;
       }
     } else {

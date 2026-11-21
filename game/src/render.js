@@ -1,7 +1,6 @@
-// The Starling Archive — everything the player sees.
-// Top-down canvas art drawn in code: no image files. The drawing order
-// matters for readability: floor, light and shadow, vision cones, cover,
-// characters, then the HUD. A guard must read against the floor at a glance.
+// The Starling Archive: everything the player sees.
+// Top-down canvas art drawn in code: no image files. Draw order keeps
+// mechanics readable: floor, light and shadow, cones, cover, characters, HUD.
 import { TILE, COLS, ROWS, VIEW_W, VIEW_H, VISION_RANGE, VISION_HALF_ANGLE, COLORS } from './config.js';
 
 export class Renderer {
@@ -26,7 +25,7 @@ export class Renderer {
         const px = x * TILE;
         const py = y * TILE;
         if (t === '#') {
-          // Towering bookshelf wall: violet stone with book-spine stripes.
+          // Book-spine stripes: the walls are shelves, not bare stone.
           ctx.fillStyle = COLORS.wall;
           ctx.fillRect(px, py, TILE, TILE);
           const spines = ['#5b3f7d', '#2c6b6b', '#8a6a35', '#4a3a6b'];
@@ -43,7 +42,7 @@ export class Renderer {
         } else {
           ctx.fillStyle = (x + y) % 2 === 0 ? COLORS.floor : COLORS.floorAlt;
           ctx.fillRect(px, py, TILE, TILE);
-          // Faint gold grout between teal stone tiles, and the odd feather.
+          // Gold grout and the odd feather give the floor texture without noise.
           ctx.strokeStyle = 'rgba(247, 201, 72, 0.07)';
           ctx.strokeRect(px + 0.5, py + 0.5, TILE - 1, TILE - 1);
           if ((x * 7 + y * 13) % 23 === 0) {
@@ -54,7 +53,7 @@ export class Renderer {
             ctx.stroke();
           }
           if (t === 's') {
-            // Shadow nook: luminous cyan dark, glowing border — one quiet patch.
+            // Shadow must read as a hiding spot at a glance.
             ctx.fillStyle = COLORS.shadow;
             ctx.fillRect(px + 2, py + 2, TILE - 4, TILE - 4);
             ctx.strokeStyle = 'rgba(88, 196, 220, 0.4)';
@@ -100,11 +99,10 @@ export class Renderer {
     }
   }
 
-  // The archive watches: giant eyes set into the side walls, turned 90
-  // degrees so they fit the wall column exactly — never on play tiles,
-  // never under the HUD or hint bar (the top/bottom rows are covered).
-  // Their pupils track Wren — the one signature you cannot mistake for
-  // any other stealth game.
+  // The archive watches: giant eyes in the side walls, turned 90
+  // degrees so they fit the wall column exactly. Never on play tiles,
+  // never under the HUD or hint bar: the top and bottom rows are covered.
+  // Their pupils track Wren, the one signature no other stealth game has.
   drawEyes(game) {
     const ctx = this.ctx;
     const spots = [
@@ -122,17 +120,12 @@ export class Renderer {
       ctx.save();
       ctx.translate(s.x, s.y);
       if (s.vertical) ctx.rotate(Math.PI / 2);
-      // Soft gold glow behind the eye so it reads at a glance.
-      ctx.fillStyle = 'rgba(247, 201, 72, 0.10)';
-      ctx.beginPath();
-      ctx.ellipse(0, 0, 80, 26, 0, 0, Math.PI * 2);
-      ctx.fill();
       // Sclera.
       ctx.fillStyle = COLORS.eyeSclera;
       ctx.beginPath();
       ctx.ellipse(0, 0, 72, 16, 0, 0, Math.PI * 2);
       ctx.fill();
-      // Violet iris, black pupil, glint — pupil follows Wren.
+      // Pupil follows Wren.
       ctx.fillStyle = COLORS.eyeIris;
       ctx.beginPath();
       ctx.arc(px, py, 9, 0, Math.PI * 2);
@@ -155,8 +148,8 @@ export class Renderer {
     }
   }
 
-  // A starling murmuration sweeping the hall: dark chevrons riding one
-  // slow sine band. Small, translucent, high up — atmosphere, not clutter.
+  // A starling murmuration sweeping the hall on one slow sine band.
+  // Small and translucent, so it stays atmosphere, not clutter.
   drawMurmuration(time) {
     const ctx = this.ctx;
     ctx.save();
@@ -211,7 +204,7 @@ export class Renderer {
       ctx.fill();
       ctx.restore();
     }
-    // Exit door: cyan frame with a gold glow ring, padlock while relics remain.
+    // The exit must read as locked until every relic is taken.
     const e = world.exit;
     ctx.fillStyle = 'rgba(88, 196, 220, 0.18)';
     ctx.beginPath();
@@ -326,7 +319,6 @@ export class Renderer {
     ctx.font = 'bold 12px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(game.alarm ? 'ALARM!' : game.detection > 1 ? 'SEEN' : 'UNSEEN', VIEW_W / 2, 26);
-    // Bottom hint line.
     ctx.fillStyle = 'rgba(8, 12, 18, 0.7)';
     ctx.fillRect(0, VIEW_H - 30, VIEW_W, 30);
     ctx.fillStyle = COLORS.muted;
@@ -364,7 +356,7 @@ export class Renderer {
     const ctx = this.ctx;
     ctx.fillStyle = '#0b1e24';
     ctx.fillRect(0, 0, VIEW_W, VIEW_H);
-    // Violet shelf columns, a giant watching eye, murmuration overhead.
+    // The title carries the signature: one giant eye, the murmuration, violet shelves.
     ctx.fillStyle = '#2c1e42';
     for (let i = 0; i < 8; i++) ctx.fillRect(60 + i * 150, 120, 110, 420);
     ctx.fillStyle = 'rgba(123, 79, 208, 0.25)';
@@ -408,11 +400,11 @@ export class Renderer {
     ctx.fillText('THE STARLING ARCHIVE', VIEW_W / 2, 300);
     ctx.fillStyle = '#58c4dc';
     ctx.font = '20px sans-serif';
-    ctx.fillText('A stealth game in three nights — the archive is watching', VIEW_W / 2, 340);
+    ctx.fillText('A stealth game in three nights. The archive is watching', VIEW_W / 2, 340);
     ctx.fillStyle = COLORS.muted;
     ctx.font = '16px sans-serif';
     ctx.fillText('You are Wren, night courier. Steal the relics. Never be seen.', VIEW_W / 2, 380);
-    ctx.fillText('Guards patrol with vision cones — crates block their sight, shadow hides you.', VIEW_W / 2, 406);
+    ctx.fillText('Guards patrol with vision cones. Crates block their sight, shadow hides you.', VIEW_W / 2, 406);
     ctx.fillStyle = COLORS.text;
     ctx.font = 'bold 18px sans-serif';
     ctx.fillText('Press ENTER to begin  •  WASD move  •  Shift sneak  •  Click throw a pebble', VIEW_W / 2, 470);

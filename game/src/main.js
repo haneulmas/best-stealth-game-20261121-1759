@@ -1,6 +1,4 @@
-// The Starling Archive — bootstrap and frame loop.
-// Loads the game, stages a screenshot when ?shot= is given, and draws
-// every frame: title, play, pause, level-complete, caught, victory.
+// The Starling Archive: bootstrap and frame loop.
 import { Game } from './game.js';
 import { Renderer } from './render.js';
 import { Input } from './input.js';
@@ -23,11 +21,14 @@ window.addEventListener('resize', () => renderer.resize());
 
 let last = performance.now();
 let time = 0;
+// Ambient motion (murmuration, lamp pulse, relic bob) freezes when the
+// player pauses or prefers reduced motion. P is the pause control for it.
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000);
   last = now;
-  time += dt;
+  if (!prefersReducedMotion && game.state !== 'paused') time += dt;
   if (!stagedShot) game.update(dt, input);
   else if (game.state === 'playing') {
     // Staged shots are frozen mid-action so the screenshot is stable:
@@ -64,7 +65,7 @@ function frame(now) {
   } else if (game.state === 'levelComplete') {
     renderer.drawWorld(game, time);
     renderer.drawCenterPanel('LEVEL CLEAR', [
-      `${game.level.name} — all relics stolen, unseen enough.`,
+      `${game.level.name}. All relics stolen, unseen enough.`,
       `Alarms so far: ${game.alarms}  •  Caught: ${game.catches}  •  Time ${game.formatTime(game.elapsed)}`,
       'Next level loading…',
     ], '#7ee081');
@@ -75,7 +76,7 @@ function frame(now) {
       `Lives left: ${game.lives}  •  Press Enter to try again.`,
     ], '#e05a4e');
   } else if (game.state === 'victory') {
-    renderer.drawCenterPanel(`THE ARCHIVE IS YOURS — ${game.rating()}`, [
+    renderer.drawCenterPanel(`THE ARCHIVE IS YOURS: ${game.rating()}`, [
       'All three levels cleared. Every relic is Wren\u2019s now.',
       `Alarms: ${game.alarms}  •  Caught: ${game.catches}  •  Time ${game.formatTime(game.elapsed)}`,
       'Press Enter to play again.',

@@ -1,4 +1,4 @@
-// The Starling Archive — the warden AI.
+// The Starling Archive: the warden AI.
 // States: patrol (walk waypoints), suspicious (pause and look),
 // investigate (walk to a thrown pebble or a heard footstep),
 // chase (run at the player during an alarm), return (walk home).
@@ -137,7 +137,6 @@ export class Guard {
       if (arrived) { this.state = 'patrol'; this.wpIndex = 1 % this.waypoints.length; this.path = null; }
       return;
     }
-    // patrol
     if (this.pauseTimer > 0) {
       this.pauseTimer -= dt;
       return;

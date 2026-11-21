@@ -1,4 +1,4 @@
-// The Starling Archive — the level as the game sees it.
+// The Starling Archive: the level as the game sees it.
 // Turns a level's grid into tiles, relics and the exit, and answers
 // the questions the other systems ask: is this solid, is this shadow.
 import { TILE } from './config.js';

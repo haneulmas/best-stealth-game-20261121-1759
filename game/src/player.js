@@ -1,6 +1,4 @@
-// The Starling Archive — Wren, the night courier.
-// Walks with WASD/arrows, sneaks with Shift (slower, quieter, harder to see),
-// throws pebbles with a mouse click to pull a guard away.
+// The Starling Archive: Wren, the night courier.
 import {
   TILE, PLAYER_SPEED, PLAYER_SNEAK_SPEED, PLAYER_RADIUS,
   PEBBLE_RANGE,
@@ -54,7 +52,6 @@ export class Player {
     } else {
       this.footstepLoud = false;
     }
-    // A click throws a pebble toward that point, if any are left.
     const click = input.takeClick();
     if (click && this.pebbles > 0) {
       const dx = click.x - this.x;
