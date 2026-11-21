@@ -8,6 +8,8 @@ Entry for the [make.fun bounty "Make the best stealth game"](https://make.fun/bo
 
 You are Wren, night courier. Steal the relics from the Starling Archive and reach the exit unseen, past wardens who patrol with vision cones. Crates block their sight, shadow hides you, lamplight gives you away. Throw a pebble (click) to pull a guard off his patrol. Get spotted and the alarm sounds — break line of sight before a warden catches you. Three levels, three lives, and a Ghost rating if no alarm ever sounds.
 
+The archive itself watches: giant eyes set into the walls track Wren wherever she goes, and a starling murmuration sweeps the hall overhead. Deep teal stone, violet shelf-walls, gold lamplight — the mechanics stay readable at a glance.
+
 ## Play
 
 ```sh

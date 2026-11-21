@@ -29,13 +29,14 @@ export const PEBBLE_RANGE = 340; // how far a thrown pebble can land
 export const PEBBLE_COUNT = 3; // per level
 
 export const COLORS = {
-  floor: '#232a33',
-  floorAlt: '#20262e',
-  wall: '#4a4238',
-  wallTop: '#6b5f4f',
-  crate: '#7a5c33',
-  crateTop: '#a07c46',
-  shadow: '#141c26',
+  // The archive watches: deep teal stone, violet shelf-walls, gold light.
+  floor: '#14282e',
+  floorAlt: '#122420',
+  wall: '#3d2b52',
+  wallTop: '#6b4a8f',
+  crate: '#8a6a35',
+  crateTop: '#b8934f',
+  shadow: '#0a2e33',
   light: '#f7c948',
   player: '#7ee081',
   playerSneak: '#4da85a',
@@ -47,4 +48,6 @@ export const COLORS = {
   exit: '#58c4dc',
   text: '#f2ead8',
   muted: '#b8ad94',
+  eyeSclera: '#f2e6c8',
+  eyeIris: '#7b4fd0',
 };

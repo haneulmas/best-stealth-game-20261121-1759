@@ -26,8 +26,16 @@ export class Renderer {
         const px = x * TILE;
         const py = y * TILE;
         if (t === '#') {
+          // Towering bookshelf wall: violet stone with book-spine stripes.
           ctx.fillStyle = COLORS.wall;
           ctx.fillRect(px, py, TILE, TILE);
+          const spines = ['#5b3f7d', '#2c6b6b', '#8a6a35', '#4a3a6b'];
+          for (let s = 0; s < 4; s++) {
+            ctx.fillStyle = spines[(x * 3 + y * 5 + s) % 4];
+            ctx.globalAlpha = 0.55;
+            ctx.fillRect(px + 3 + s * 9, py + 4, 6, TILE - 8);
+          }
+          ctx.globalAlpha = 1;
           ctx.fillStyle = COLORS.wallTop;
           ctx.fillRect(px, py, TILE, 6);
           ctx.fillStyle = 'rgba(0,0,0,0.25)';
@@ -35,17 +43,27 @@ export class Renderer {
         } else {
           ctx.fillStyle = (x + y) % 2 === 0 ? COLORS.floor : COLORS.floorAlt;
           ctx.fillRect(px, py, TILE, TILE);
+          // Faint gold grout between teal stone tiles, and the odd feather.
+          ctx.strokeStyle = 'rgba(247, 201, 72, 0.07)';
+          ctx.strokeRect(px + 0.5, py + 0.5, TILE - 1, TILE - 1);
+          if ((x * 7 + y * 13) % 23 === 0) {
+            ctx.strokeStyle = 'rgba(247, 201, 72, 0.16)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(px + TILE / 2, py + TILE / 2 + 6, 7, Math.PI * 1.15, Math.PI * 1.85);
+            ctx.stroke();
+          }
           if (t === 's') {
-            // Shadow nook: dark blue, faint border — one quiet patch, no label spam.
+            // Shadow nook: luminous cyan dark, glowing border — one quiet patch.
             ctx.fillStyle = COLORS.shadow;
             ctx.fillRect(px + 2, py + 2, TILE - 4, TILE - 4);
-            ctx.strokeStyle = 'rgba(120,160,220,0.18)';
+            ctx.strokeStyle = 'rgba(88, 196, 220, 0.4)';
             ctx.strokeRect(px + 2.5, py + 2.5, TILE - 5, TILE - 5);
             // One label per patch, on its top-left tile, so the hiding spots read.
             const above = y > 0 ? world.grid[y - 1][x] : '#';
             const left = x > 0 ? world.grid[y][x - 1] : '#';
             if (above !== 's' && left !== 's') {
-              ctx.fillStyle = 'rgba(140,175,230,0.5)';
+              ctx.fillStyle = 'rgba(120, 220, 240, 0.65)';
               ctx.font = 'bold 10px sans-serif';
               ctx.textAlign = 'center';
               ctx.fillText('SHADOW', px + TILE / 2, py + TILE / 2 + 3);
@@ -54,6 +72,10 @@ export class Renderer {
             const pulse = 0.10 + 0.05 * Math.sin(time * 2 + x);
             ctx.fillStyle = `rgba(247, 201, 72, ${pulse})`;
             ctx.fillRect(px, py, TILE, TILE);
+            ctx.fillStyle = 'rgba(247, 201, 72, 0.10)';
+            ctx.beginPath();
+            ctx.arc(px + TILE / 2, py + TILE / 2, 16, 0, Math.PI * 2);
+            ctx.fill();
             ctx.fillStyle = 'rgba(247, 201, 72, 0.55)';
             ctx.beginPath();
             ctx.arc(px + TILE / 2, py + TILE / 2, 5, 0, Math.PI * 2);
@@ -76,6 +98,83 @@ export class Renderer {
         }
       }
     }
+  }
+
+  // The archive watches: giant eyes set into the side walls, turned 90
+  // degrees so they fit the wall column exactly — never on play tiles,
+  // never under the HUD or hint bar (the top/bottom rows are covered).
+  // Their pupils track Wren — the one signature you cannot mistake for
+  // any other stealth game.
+  drawEyes(game) {
+    const ctx = this.ctx;
+    const spots = [
+      { x: 20, y: 6 * TILE + 20, vertical: true },
+      { x: COLS * TILE - 20, y: 11 * TILE + 20, vertical: true },
+    ];
+    for (const s of spots) {
+      const dx = game.player.x - s.x;
+      const dy = game.player.y - s.y;
+      const d = Math.hypot(dx, dy) || 1;
+      // Local eye coords: long axis follows the wall, so the pupil's
+      // long-axis offset tracks the player's offset along the wall.
+      const px = (dy / d) * 14;
+      const py = (-dx / d) * 6;
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      if (s.vertical) ctx.rotate(Math.PI / 2);
+      // Soft gold glow behind the eye so it reads at a glance.
+      ctx.fillStyle = 'rgba(247, 201, 72, 0.10)';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 80, 26, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Sclera.
+      ctx.fillStyle = COLORS.eyeSclera;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 72, 16, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Violet iris, black pupil, glint — pupil follows Wren.
+      ctx.fillStyle = COLORS.eyeIris;
+      ctx.beginPath();
+      ctx.arc(px, py, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#0b0b12';
+      ctx.beginPath();
+      ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.beginPath();
+      ctx.arc(px - 2, py - 2, 1.6, 0, Math.PI * 2);
+      ctx.fill();
+      // Upper lid: the wall's own violet arc over the eye.
+      ctx.strokeStyle = COLORS.wall;
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 72, 16, 0, Math.PI, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  // A starling murmuration sweeping the hall: dark chevrons riding one
+  // slow sine band. Small, translucent, high up — atmosphere, not clutter.
+  drawMurmuration(time) {
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(13, 21, 18, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    for (let i = 0; i < 36; i++) {
+      const x = (((i * 97 + time * 30) % (VIEW_W + 240)) + VIEW_W + 240) % (VIEW_W + 240) - 120;
+      const y = 90 + 70 * Math.sin(x / 220 + time * 0.4) + (i % 5) * 12;
+      const flap = Math.sin(time * 6 + i * 1.3) * 3;
+      const s = 5 + (i % 3) * 2;
+      ctx.beginPath();
+      ctx.moveTo(x - s, y - flap);
+      ctx.lineTo(x, y + 2);
+      ctx.lineTo(x + s, y - flap);
+      ctx.stroke();
+    }
+    ctx.restore();
   }
 
   drawCone(guard, alarm) {
@@ -112,8 +211,12 @@ export class Renderer {
       ctx.fill();
       ctx.restore();
     }
-    // Exit door: cyan frame, padlock while relics remain.
+    // Exit door: cyan frame with a gold glow ring, padlock while relics remain.
     const e = world.exit;
+    ctx.fillStyle = 'rgba(88, 196, 220, 0.18)';
+    ctx.beginPath();
+    ctx.arc(e.x, e.y, 26, 0, Math.PI * 2);
+    ctx.fill();
     ctx.fillStyle = world.exitOpen ? COLORS.exit : '#3a6b7a';
     ctx.fillRect(e.x - 16, e.y - 16, 32, 32);
     ctx.fillStyle = '#0e1a20';
@@ -259,30 +362,53 @@ export class Renderer {
 
   drawTitle(time) {
     const ctx = this.ctx;
-    ctx.fillStyle = '#10151d';
+    ctx.fillStyle = '#0b1e24';
     ctx.fillRect(0, 0, VIEW_W, VIEW_H);
-    // A quiet archive hall behind the title: shelves and one lamp cone.
-    ctx.fillStyle = '#1c232d';
+    // Violet shelf columns, a giant watching eye, murmuration overhead.
+    ctx.fillStyle = '#2c1e42';
     for (let i = 0; i < 8; i++) ctx.fillRect(60 + i * 150, 120, 110, 420);
-    ctx.fillStyle = 'rgba(247, 201, 72, 0.12)';
+    ctx.fillStyle = 'rgba(123, 79, 208, 0.25)';
+    for (let i = 0; i < 8; i++) {
+      for (let s = 0; s < 4; s++) ctx.fillRect(66 + i * 150 + s * 26, 130, 14, 400);
+    }
+    ctx.fillStyle = 'rgba(247, 201, 72, 0.10)';
     ctx.beginPath();
-    ctx.moveTo(640, 90);
-    ctx.lineTo(480, 620);
-    ctx.lineTo(800, 620);
-    ctx.closePath();
+    ctx.ellipse(640, 210, 340, 95, 0, 0, Math.PI * 2);
     ctx.fill();
+    ctx.fillStyle = COLORS.eyeSclera;
+    ctx.beginPath();
+    ctx.ellipse(640, 210, 300, 72, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = COLORS.eyeIris;
+    ctx.beginPath();
+    ctx.arc(640, 210, 42, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#0b0b12';
+    ctx.beginPath();
+    ctx.arc(640, 210, 20, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.beginPath();
+    ctx.arc(628, 196, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#3d2b52';
+    ctx.lineWidth = 10;
+    ctx.beginPath();
+    ctx.ellipse(640, 210, 300, 72, 0, Math.PI, Math.PI * 2);
+    ctx.stroke();
+    this.drawMurmuration(time);
     const glow = 0.7 + 0.3 * Math.sin(time * 1.5);
     ctx.fillStyle = `rgba(247, 201, 72, ${0.75 * glow})`;
     ctx.beginPath();
     ctx.arc(640, 90, 14, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = COLORS.text;
+    ctx.fillStyle = COLORS.light;
     ctx.font = 'bold 56px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('THE STARLING ARCHIVE', VIEW_W / 2, 300);
-    ctx.fillStyle = COLORS.light;
+    ctx.fillStyle = '#58c4dc';
     ctx.font = '20px sans-serif';
-    ctx.fillText('A stealth game in three nights', VIEW_W / 2, 340);
+    ctx.fillText('A stealth game in three nights — the archive is watching', VIEW_W / 2, 340);
     ctx.fillStyle = COLORS.muted;
     ctx.font = '16px sans-serif';
     ctx.fillText('You are Wren, night courier. Steal the relics. Never be seen.', VIEW_W / 2, 380);
@@ -297,7 +423,9 @@ export class Renderer {
 
   drawWorld(game, time) {
     this.drawFloor(game.world, time);
+    this.drawEyes(game);
     for (const guard of game.guards) this.drawCone(guard, game.alarm);
+    this.drawMurmuration(time);
     this.drawRelicsAndExit(game.world, time);
     for (const guard of game.guards) this.drawGuard(guard, game.alarm);
     this.drawPlayer(game.player, time);
