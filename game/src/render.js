@@ -68,12 +68,14 @@ export class Renderer {
               ctx.fillText('SHADOW', px + TILE / 2, py + TILE / 2 + 3);
             }
           } else if (t === 'o') {
-            const pulse = 0.10 + 0.05 * Math.sin(time * 2 + x);
+            // Lamplight flickers: two sines out of phase, so the bright
+            // tiles are never quite steady and the light/dark choice reads.
+            const pulse = 0.10 + 0.05 * Math.sin(time * 2 + x) + 0.05 * Math.sin(time * 6.7 + x * 2.3);
             ctx.fillStyle = `rgba(247, 201, 72, ${pulse})`;
             ctx.fillRect(px, py, TILE, TILE);
             ctx.fillStyle = 'rgba(247, 201, 72, 0.10)';
             ctx.beginPath();
-            ctx.arc(px + TILE / 2, py + TILE / 2, 16, 0, Math.PI * 2);
+            ctx.arc(px + TILE / 2, py + TILE / 2, 16 + 6 * Math.sin(time * 6.7 + x), 0, Math.PI * 2);
             ctx.fill();
             ctx.fillStyle = 'rgba(247, 201, 72, 0.55)';
             ctx.beginPath();
@@ -103,20 +105,38 @@ export class Renderer {
   // degrees so they fit the wall column exactly. Never on play tiles,
   // never under the HUD or hint bar: the top and bottom rows are covered.
   // Their pupils track Wren, the one signature no other stealth game has.
+  // Two more eyes watch from the shelves of each level. When the alarm
+  // sounds the archive wakes: more eyes open, and every iris burns red.
   drawEyes(game) {
     const ctx = this.ctx;
     const spots = [
       { x: 20, y: 6 * TILE + 20, vertical: true },
       { x: COLS * TILE - 20, y: 11 * TILE + 20, vertical: true },
     ];
-    // A third eye watches from the shelves themselves, one per level,
-    // each on a wall that level really has, so it never floats over floor.
-    const shelfEye = [
-      { x: 6 * TILE + 20, y: 4 * TILE + 20, vertical: true },
-      { x: 11 * TILE + 20, y: 7 * TILE + 20, vertical: true },
-      { x: 13 * TILE + 20, y: 8 * TILE + 20, vertical: true },
+    // Shelf eyes, one or two per level, each on a wall that level really
+    // has, so no eye ever floats over the floor.
+    const shelfEyes = [
+      [{ x: 6 * TILE + 20, y: 4 * TILE + 20, vertical: true }],
+      [
+        { x: 11 * TILE + 20, y: 7 * TILE + 20, vertical: true },
+        { x: 17 * TILE + 20, y: 7 * TILE + 20, vertical: true },
+      ],
+      [{ x: 13 * TILE + 20, y: 8 * TILE + 20, vertical: true }],
     ][game.levelIndex];
-    if (shelfEye) spots.push(shelfEye);
+    if (shelfEyes) spots.push(...shelfEyes);
+    // Alarm eyes: only while the alarm sounds, on walls the level has.
+    if (game.alarm) {
+      const alarmEyes = [
+        [{ x: 6 * TILE + 20, y: 13 * TILE + 20, vertical: true }],
+        [
+          { x: 5 * TILE + 20, y: 10 * TILE + 20, vertical: true },
+          { x: 23 * TILE + 20, y: 5 * TILE + 20, vertical: true },
+        ],
+        [{ x: 18 * TILE + 20, y: 8 * TILE + 20, vertical: true }],
+      ][game.levelIndex];
+      if (alarmEyes) spots.push(...alarmEyes);
+    }
+    const iris = game.alarm ? '#e05a4e' : COLORS.eyeIris;
     for (const s of spots) {
       const dx = game.player.x - s.x;
       const dy = game.player.y - s.y;
@@ -134,7 +154,7 @@ export class Renderer {
       ctx.ellipse(0, 0, 72, 16, 0, 0, Math.PI * 2);
       ctx.fill();
       // Pupil follows Wren.
-      ctx.fillStyle = COLORS.eyeIris;
+      ctx.fillStyle = iris;
       ctx.beginPath();
       ctx.arc(px, py, 9, 0, Math.PI * 2);
       ctx.fill();
