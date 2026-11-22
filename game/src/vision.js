@@ -1,7 +1,7 @@
 // The Starling Archive: sight and hearing.
 // A guard sees you only when you are inside the vision cone AND the straight
 // line between you has no wall or crate in the way. Cover really works.
-import { TILE, VISION_RANGE, VISION_HALF_ANGLE } from './config.js';
+import { TILE, VISION_RANGE, VISION_HALF_ANGLE, SMOKE_RADIUS } from './config.js';
 
 export function tileAt(world, px, py) {
   const tx = Math.floor(px / TILE);
@@ -20,6 +20,7 @@ export function blocksMovement(world, px, py) {
 }
 
 // Walk the line in small steps; any sight-blocking tile ends the view.
+// A smoke cloud blinds both ways: a line through it sees nothing.
 export function hasLineOfSight(world, ax, ay, bx, by) {
   const dx = bx - ax;
   const dy = by - ay;
@@ -27,7 +28,10 @@ export function hasLineOfSight(world, ax, ay, bx, by) {
   const steps = Math.max(1, Math.ceil(dist / 8));
   for (let i = 1; i < steps; i++) {
     const t = i / steps;
-    if (blocksSight(world, ax + dx * t, ay + dy * t)) return false;
+    const px = ax + dx * t;
+    const py = ay + dy * t;
+    if (blocksSight(world, px, py)) return false;
+    if (world.smoke && Math.hypot(px - world.smoke.x, py - world.smoke.y) < SMOKE_RADIUS) return false;
   }
   return true;
 }

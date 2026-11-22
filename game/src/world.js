@@ -15,6 +15,7 @@ export class World {
     }));
     this.exit = { x: level.exit[0] * TILE + TILE / 2, y: level.exit[1] * TILE + TILE / 2 };
     this.start = level.start;
+    this.smoke = null; // the one smoke cloud, if Wren dropped one (vision checks it)
   }
 
   tileAt(px, py) {

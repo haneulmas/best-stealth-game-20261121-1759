@@ -1,7 +1,7 @@
 // The Starling Archive: everything the player sees.
 // Top-down canvas art drawn in code: no image files. Draw order keeps
 // mechanics readable: floor, light and shadow, cones, cover, characters, HUD.
-import { TILE, COLS, ROWS, VIEW_W, VIEW_H, VISION_RANGE, VISION_HALF_ANGLE, PEBBLE_RING_SECONDS, COLORS } from './config.js';
+import { TILE, COLS, ROWS, VIEW_W, VIEW_H, VISION_RANGE, VISION_HALF_ANGLE, PEBBLE_RING_SECONDS, SMOKE_SECONDS, SMOKE_RADIUS, COLORS } from './config.js';
 
 export class Renderer {
   constructor(canvas) {
@@ -122,6 +122,7 @@ export class Renderer {
         { x: 17 * TILE + 20, y: 7 * TILE + 20, vertical: true },
       ],
       [{ x: 13 * TILE + 20, y: 8 * TILE + 20, vertical: true }],
+      [{ x: 15 * TILE + 20, y: 5 * TILE + 20, vertical: true }],
     ][game.levelIndex];
     if (shelfEyes) spots.push(...shelfEyes);
     // Alarm eyes: only while the alarm sounds, on walls the level has.
@@ -133,6 +134,7 @@ export class Renderer {
           { x: 23 * TILE + 20, y: 5 * TILE + 20, vertical: true },
         ],
         [{ x: 18 * TILE + 20, y: 8 * TILE + 20, vertical: true }],
+        [{ x: 23 * TILE + 20, y: 13 * TILE + 20, vertical: true }],
       ][game.levelIndex];
       if (alarmEyes) spots.push(...alarmEyes);
     }
@@ -216,6 +218,32 @@ export class Renderer {
     ctx.beginPath();
     ctx.arc(ring.x, ring.y, 4, 0, Math.PI * 2);
     ctx.fill();
+    ctx.restore();
+  }
+
+  // The smoke cloud: overlapping violet-grey puffs, translucent so the
+  // player still sees Wren, thick enough to read as a hiding place.
+  drawSmoke(game, time) {
+    const smoke = game.world.smoke;
+    if (!smoke) return;
+    const t = Math.min(1, smoke.age / SMOKE_SECONDS);
+    const ctx = this.ctx;
+    ctx.save();
+    const puffs = [
+      [0, 0, 42], [-34, 12, 30], [32, 14, 32], [-14, -26, 28], [18, -24, 26],
+    ];
+    for (const [dx, dy, r] of puffs) {
+      const wobble = Math.sin(time * 2 + dx) * 3;
+      ctx.fillStyle = `rgba(120, 116, 150, ${0.34 * (1 - t)})`;
+      ctx.beginPath();
+      ctx.arc(smoke.x + dx + wobble, smoke.y + dy, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.strokeStyle = `rgba(200, 196, 220, ${0.5 * (1 - t)})`;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(smoke.x, smoke.y, SMOKE_RADIUS * (0.9 + 0.1 * Math.sin(time * 2)), 0, Math.PI * 2);
+    ctx.stroke();
     ctx.restore();
   }
 
@@ -354,7 +382,7 @@ export class Renderer {
     ctx.textAlign = 'right';
     const relics = `Relics ${game.world.relicsTotal - game.world.relicsLeft}/${game.world.relicsTotal}`;
     ctx.fillText(relics, VIEW_W - 260, 29);
-    ctx.fillText(`Pebbles ${game.player.pebbles}  •  ${game.formatTime(game.elapsed)}`, VIEW_W - 14, 29);
+    ctx.fillText(`Pebbles ${game.player.pebbles}  •  Smoke ${game.player.smokes}  •  ${game.formatTime(game.elapsed)}`, VIEW_W - 14, 29);
     // Detection meter, centre top: the one number that decides an alarm.
     const w = 220;
     const x = VIEW_W / 2 - w / 2;
@@ -374,7 +402,7 @@ export class Renderer {
     ctx.font = '13px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(
-      'WASD / arrows move  •  Shift sneak  •  Click throw a pebble  •  P pause  •  M mute  •  Hide in SHADOW, avoid lamplight',
+      'WASD / arrows move  •  Shift sneak  •  Click throw a pebble  •  Q smoke  •  P pause  •  M mute  •  Hide in SHADOW, avoid lamplight',
       VIEW_W / 2, VIEW_H - 11,
     );
   }
@@ -449,17 +477,17 @@ export class Renderer {
     ctx.fillText('THE STARLING ARCHIVE', VIEW_W / 2, 300);
     ctx.fillStyle = '#58c4dc';
     ctx.font = '20px sans-serif';
-    ctx.fillText('A stealth game in three nights. The archive is watching', VIEW_W / 2, 340);
+    ctx.fillText('A stealth game in four nights. The archive is watching', VIEW_W / 2, 340);
     ctx.fillStyle = COLORS.muted;
     ctx.font = '16px sans-serif';
     ctx.fillText('You are Wren, night courier. Steal the relics. Never be seen.', VIEW_W / 2, 380);
     ctx.fillText('Guards patrol with vision cones. Crates block their sight, shadow hides you.', VIEW_W / 2, 406);
     ctx.fillStyle = COLORS.text;
     ctx.font = 'bold 18px sans-serif';
-    ctx.fillText('Press ENTER to begin  •  WASD move  •  Shift sneak  •  Click throw a pebble', VIEW_W / 2, 470);
+    ctx.fillText('Press ENTER to begin  •  WASD move  •  Shift sneak  •  Click throw a pebble  •  Q smoke', VIEW_W / 2, 470);
     ctx.fillStyle = COLORS.muted;
     ctx.font = '14px sans-serif';
-    ctx.fillText('3 levels  •  5 wardens at most  •  Ghost rating if no alarm ever sounds', VIEW_W / 2, 510);
+    ctx.fillText('4 levels  •  6 wardens at most  •  Ghost rating if no alarm ever sounds', VIEW_W / 2, 510);
   }
 
   drawWorld(game, time) {
@@ -468,6 +496,7 @@ export class Renderer {
     for (const guard of game.guards) this.drawCone(guard, game.alarm);
     this.drawMurmuration(time);
     this.drawRelicsAndExit(game.world, time);
+    this.drawSmoke(game, time);
     this.drawPebbleRing(game);
     for (const guard of game.guards) this.drawGuard(guard, game.alarm);
     this.drawPlayer(game.player, time);

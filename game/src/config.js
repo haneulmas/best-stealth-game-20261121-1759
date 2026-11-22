@@ -28,6 +28,9 @@ export const ALARM_SECONDS = 6; // how long a full meter keeps the alarm up
 export const PEBBLE_RANGE = 340; // how far a thrown pebble can land
 export const PEBBLE_COUNT = 3; // per level
 export const PEBBLE_RING_SECONDS = 1.4; // how long the landing ring shows
+export const SMOKE_COUNT = 2; // per level, Q drops one at Wren's feet
+export const SMOKE_SECONDS = 4; // how long a smoke cloud blinds wardens
+export const SMOKE_RADIUS = 60; // px, the cloud no guard can see through
 
 export const COLORS = {
   // The archive watches: deep teal stone, violet shelf-walls, gold light.

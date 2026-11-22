@@ -1,4 +1,4 @@
-// The Starling Archive: the three levels.
+// The Starling Archive: the four levels.
 // Each level is built from rectangles instead of hand-counted ASCII maps,
 // so a wall is never one tile off. Legend used by the builder:
 //   '#' wall (blocks movement and sight)   'X' crate (blocks movement and sight)
@@ -97,6 +97,29 @@ export const LEVELS = [
       { spawn: [15, 8], waypoints: [[15, 8], [15, 3], [24, 3], [24, 8]], speed: 100 },
       { spawn: [8, 14], waypoints: [[8, 14], [8, 8], [4, 8], [4, 14]], speed: 100 },
       { spawn: [24, 14], waypoints: [[24, 14], [24, 8], [28, 8], [28, 14]], speed: 108 },
+    ],
+  }),
+  buildLevel({
+    name: 'Level 4: The Ledger',
+    subtitle: 'Six wardens, four relics. The ledger never forgets.',
+    start: [2, 2],
+    exit: [29, 15],
+    relics: [[11, 4], [20, 14], [27, 3], [12, 13]],
+    paint: [
+      [7, 3, 1, 6, '#'], [7, 11, 1, 5, '#'], // ledger columns, gaps at rows 9-10
+      [15, 3, 1, 5, '#'], [15, 10, 1, 6, '#'], // centre column, gap at rows 8-9
+      [23, 3, 1, 6, '#'], [23, 11, 1, 5, '#'], // right column, gaps at rows 9-10
+      [11, 6, 2, 1, 'X'], [19, 12, 2, 1, 'X'], [25, 5, 2, 1, 'X'], [5, 9, 2, 1, 'X'], // crate cover
+      [3, 12, 3, 3, 's'], [10, 2, 3, 2, 's'], [18, 13, 4, 3, 's'], [27, 7, 2, 3, 's'], // shadow nooks
+      [8, 2, 2, 2, 'o'], [20, 8, 2, 2, 'o'], [12, 14, 2, 2, 'o'], [28, 3, 2, 2, 'o'], // lamplight
+    ],
+    guards: [
+      { spawn: [10, 15], waypoints: [[10, 15], [10, 4], [16, 4], [16, 15]], speed: 100 },
+      { spawn: [21, 2], waypoints: [[21, 2], [21, 15], [27, 15], [27, 2]], speed: 104 },
+      { spawn: [13, 8], waypoints: [[13, 8], [13, 13], [19, 13], [19, 8]], speed: 96 },
+      { spawn: [26, 9], waypoints: [[26, 9], [26, 14], [21, 14], [21, 9]], speed: 100 },
+      { spawn: [5, 5], waypoints: [[5, 5], [5, 13], [9, 13], [9, 5]], speed: 96 },
+      { spawn: [24, 6], waypoints: [[24, 6], [24, 11], [18, 11], [18, 6]], speed: 104 },
     ],
   }),
 ];

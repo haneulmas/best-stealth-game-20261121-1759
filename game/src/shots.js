@@ -37,6 +37,9 @@ export function applyShot(game, params) {
     game.guards[3].facing = Math.PI;
     // Frozen mid-ring: the shot is staged, so the age never advances.
     game.pebbleRing = { x: 18 * 40 + 20, y: 12 * 40 + 20, age: 0.45 };
+    // One smoke spent, the cloud still hanging between Wren and the cone.
+    game.world.smoke = { x: 18 * 40 + 20, y: 13 * 40 + 20, age: 1.0 };
+    game.player.smokes = 1;
     game.detection = 38;
     game.message = 'A pebble rings in the dark. The warden turns.';
     game.messageTimer = 99;

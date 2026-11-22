@@ -1,7 +1,7 @@
 // The Starling Archive: Wren, the night courier.
 import {
   TILE, PLAYER_SPEED, PLAYER_SNEAK_SPEED, PLAYER_RADIUS,
-  PEBBLE_RANGE,
+  PEBBLE_RANGE, SMOKE_COUNT,
 } from './config.js';
 import { blocksMovement } from './vision.js';
 
@@ -15,6 +15,7 @@ export class Player {
     this.sneaking = false;
     this.running = false;
     this.pebbles = 3;
+    this.smokes = SMOKE_COUNT;
     this.stepTimer = 0;
     this.footstepLoud = false;
   }
@@ -26,6 +27,7 @@ export class Player {
     this.dirY = 1;
     this.moving = false;
     this.pebbles = 3;
+    this.smokes = SMOKE_COUNT;
   }
 
   update(dt, input, world, sounds) {

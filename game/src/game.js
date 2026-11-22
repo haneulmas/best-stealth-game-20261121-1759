@@ -7,6 +7,7 @@ import {
   DETECT_BASE, DETECT_CLOSE_BONUS, DETECT_RUN_BONUS, DETECT_LIGHT_BONUS,
   DETECT_SHADOW_FACTOR, DETECT_DECAY, ALARM_SECONDS,
   HEARING_RANGE, SNEAK_HEARING_RANGE, PEBBLE_RING_SECONDS,
+  SMOKE_SECONDS,
 } from './config.js';
 import { LEVELS } from './levels.js';
 import { World } from './world.js';
@@ -98,6 +99,18 @@ export class Game {
       if (this.pebbleRing) {
         this.pebbleRing.age += dt;
         if (this.pebbleRing.age > PEBBLE_RING_SECONDS) this.pebbleRing = null;
+      }
+      // Smoke (Q): a cloud at Wren's feet no warden can see through, for
+      // crossing open floor with no shadow. Two per level, so it is spent
+      // on purpose, never by accident: it needs its own key.
+      if (input.wasPressed('q') && this.player.smokes > 0 && !this.world.smoke) {
+        this.player.smokes -= 1;
+        this.world.smoke = { x: this.player.x, y: this.player.y, age: 0 };
+        this.sounds.smoke();
+      }
+      if (this.world.smoke) {
+        this.world.smoke.age += dt;
+        if (this.world.smoke.age > SMOKE_SECONDS) this.world.smoke = null;
       }
       // Running footsteps can be heard: a guard turns to investigate.
       if (this.player.footstepLoud) {

@@ -69,6 +69,8 @@ export class SoundBank {
 
   pebble() { this.noise(0.12, 0.2, 2400); this.tone(1400, 0.08, 'triangle', 0.08, 900); }
 
+  smoke() { this.noise(0.5, 0.18, 500); }
+
   pickup() {
     this.tone(660, 0.12, 'sine', 0.22);
     setTimeout(() => this.tone(990, 0.18, 'sine', 0.22), 90);
