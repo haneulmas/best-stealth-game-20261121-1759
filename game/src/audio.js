@@ -71,8 +71,6 @@ export class SoundBank {
 
   smoke() { this.noise(0.5, 0.18, 500); }
 
-  snuff() { this.noise(0.25, 0.12, 300); }
-
   pickup() {
     this.tone(660, 0.12, 'sine', 0.22);
     setTimeout(() => this.tone(990, 0.18, 'sine', 0.22), 90);

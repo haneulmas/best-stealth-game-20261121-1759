@@ -15,7 +15,7 @@ export function applyShot(game, params) {
   }
   if (shot === 'play') {
     game.start();
-    game.loadLevel(3); // The Ledger: six patrols, columns, shadow nooks
+    game.loadLevel(1); // The Stacks: four patrols, shelves, shadow nooks
     game.state = 'playing';
     // Wren crouched in shadow, a cone sweeping the patch's edge, a pebble
     // still ringing where it landed. Almost seen, not caught.
@@ -28,26 +28,18 @@ export function applyShot(game, params) {
     game.guards[1].x = 20 * 40 + 20;
     game.guards[1].y = 6 * 40 + 20;
     game.guards[1].facing = Math.PI;
-    // Spread the other four wardens so no two cones sit on each other.
+    // Spread the other two wardens so no two cones sit on each other.
     game.guards[2].x = 10 * 40 + 20;
     game.guards[2].y = 13 * 40 + 20;
     game.guards[2].facing = -Math.PI / 2;
     game.guards[3].x = 25 * 40 + 20;
     game.guards[3].y = 11 * 40 + 20;
     game.guards[3].facing = Math.PI;
-    game.guards[4].x = 5 * 40 + 20;
-    game.guards[4].y = 7 * 40 + 20;
-    game.guards[4].facing = Math.PI / 2;
-    game.guards[5].x = 24 * 40 + 20;
-    game.guards[5].y = 6 * 40 + 20;
-    game.guards[5].facing = Math.PI;
     // Frozen mid-ring: the shot is staged, so the age never advances.
     game.pebbleRing = { x: 18 * 40 + 20, y: 12 * 40 + 20, age: 0.45 };
     // One smoke spent, the cloud still hanging between Wren and the cone.
     game.world.smoke = { x: 18 * 40 + 20, y: 13 * 40 + 20, age: 1.0 };
     game.player.smokes = 1;
-    // Two lamps already snuffed, so the dark tiles read in the cover.
-    game.world.snuffed = new Set(['8,2', '20,8']);
     game.detection = 38;
     game.message = 'A pebble rings in the dark. The warden turns.';
     game.messageTimer = 99;
@@ -55,7 +47,7 @@ export function applyShot(game, params) {
   }
   if (shot === 'alert') {
     game.start();
-    game.loadLevel(3); // The Ledger: three wardens closing on Wren
+    game.loadLevel(0);
     game.state = 'playing';
     game.player.x = 12 * 40 + 20;
     game.player.y = 8 * 40 + 20;
@@ -68,11 +60,6 @@ export function applyShot(game, params) {
     game.guards[1].y = 8 * 40 + 20;
     game.guards[1].facing = Math.PI;
     game.guards[1].state = 'chase';
-    // A third warden closes from below, so the alarm reads as a trap.
-    game.guards[2].x = 13 * 40 + 20;
-    game.guards[2].y = 13 * 40 + 20;
-    game.guards[2].facing = -Math.PI / 2;
-    game.guards[2].state = 'chase';
     game.detection = 100;
     game.alarm = true;
     game.alarmTimer = 5;
@@ -93,5 +80,5 @@ export function applyShot(game, params) {
 }
 
 export function shotLevelName(shot) {
-  return shot === 'play' ? LEVELS[3].name : LEVELS[0].name;
+  return shot === 'play' ? LEVELS[1].name : LEVELS[0].name;
 }
