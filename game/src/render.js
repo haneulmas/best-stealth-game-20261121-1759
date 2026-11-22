@@ -1,7 +1,7 @@
 // The Starling Archive: everything the player sees.
 // Top-down canvas art drawn in code: no image files. Draw order keeps
 // mechanics readable: floor, light and shadow, cones, cover, characters, HUD.
-import { TILE, COLS, ROWS, VIEW_W, VIEW_H, VISION_RANGE, VISION_HALF_ANGLE, COLORS } from './config.js';
+import { TILE, COLS, ROWS, VIEW_W, VIEW_H, VISION_RANGE, VISION_HALF_ANGLE, PEBBLE_RING_SECONDS, COLORS } from './config.js';
 
 export class Renderer {
   constructor(canvas) {
@@ -109,6 +109,14 @@ export class Renderer {
       { x: 20, y: 6 * TILE + 20, vertical: true },
       { x: COLS * TILE - 20, y: 11 * TILE + 20, vertical: true },
     ];
+    // A third eye watches from the shelves themselves, one per level,
+    // each on a wall that level really has, so it never floats over floor.
+    const shelfEye = [
+      { x: 6 * TILE + 20, y: 4 * TILE + 20, vertical: true },
+      { x: 11 * TILE + 20, y: 7 * TILE + 20, vertical: true },
+      { x: 13 * TILE + 20, y: 8 * TILE + 20, vertical: true },
+    ][game.levelIndex];
+    if (shelfEye) spots.push(shelfEye);
     for (const s of spots) {
       const dx = game.player.x - s.x;
       const dy = game.player.y - s.y;
@@ -149,24 +157,45 @@ export class Renderer {
   }
 
   // A starling murmuration sweeping the hall on one slow sine band.
-  // Small and translucent, so it stays atmosphere, not clutter.
+  // Denser and lower than the first pass, so it reads in the cover shot
+  // instead of hiding at the top. Still translucent, still atmosphere.
   drawMurmuration(time) {
     const ctx = this.ctx;
     ctx.save();
-    ctx.strokeStyle = 'rgba(13, 21, 18, 0.6)';
+    ctx.strokeStyle = 'rgba(13, 21, 18, 0.7)';
     ctx.lineWidth = 2;
     ctx.lineCap = 'round';
-    for (let i = 0; i < 36; i++) {
+    for (let i = 0; i < 56; i++) {
       const x = (((i * 97 + time * 30) % (VIEW_W + 240)) + VIEW_W + 240) % (VIEW_W + 240) - 120;
-      const y = 90 + 70 * Math.sin(x / 220 + time * 0.4) + (i % 5) * 12;
+      const y = 170 + 90 * Math.sin(x / 220 + time * 0.4) + (i % 5) * 12;
       const flap = Math.sin(time * 6 + i * 1.3) * 3;
-      const s = 5 + (i % 3) * 2;
+      const s = 6 + (i % 3) * 3;
       ctx.beginPath();
       ctx.moveTo(x - s, y - flap);
       ctx.lineTo(x, y + 2);
       ctx.lineTo(x + s, y - flap);
       ctx.stroke();
     }
+    ctx.restore();
+  }
+
+  // The pebble's landing ring: it expands and fades, so the player sees
+  // the noise a thrown pebble makes and which wardens it pulls away.
+  drawPebbleRing(game) {
+    const ring = game.pebbleRing;
+    if (!ring) return;
+    const t = Math.min(1, ring.age / PEBBLE_RING_SECONDS);
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.strokeStyle = `rgba(247, 201, 72, ${0.85 * (1 - t)})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(ring.x, ring.y, 14 + t * 90, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = `rgba(247, 201, 72, ${0.9 * (1 - t)})`;
+    ctx.beginPath();
+    ctx.arc(ring.x, ring.y, 4, 0, Math.PI * 2);
+    ctx.fill();
     ctx.restore();
   }
 
@@ -419,6 +448,7 @@ export class Renderer {
     for (const guard of game.guards) this.drawCone(guard, game.alarm);
     this.drawMurmuration(time);
     this.drawRelicsAndExit(game.world, time);
+    this.drawPebbleRing(game);
     for (const guard of game.guards) this.drawGuard(guard, game.alarm);
     this.drawPlayer(game.player, time);
     this.drawHud(game);

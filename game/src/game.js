@@ -6,7 +6,7 @@
 import {
   DETECT_BASE, DETECT_CLOSE_BONUS, DETECT_RUN_BONUS, DETECT_LIGHT_BONUS,
   DETECT_SHADOW_FACTOR, DETECT_DECAY, ALARM_SECONDS,
-  HEARING_RANGE, SNEAK_HEARING_RANGE,
+  HEARING_RANGE, SNEAK_HEARING_RANGE, PEBBLE_RING_SECONDS,
 } from './config.js';
 import { LEVELS } from './levels.js';
 import { World } from './world.js';
@@ -34,6 +34,7 @@ export class Game {
     this.message = '';
     this.messageTimer = 0;
     this.stateTimer = 0;
+    this.pebbleRing = null; // where the last pebble landed, while it rings
   }
 
   get levelName() { return this.level.name; }
@@ -50,6 +51,7 @@ export class Game {
     this.levelTime = 0;
     this.message = this.level.subtitle;
     this.messageTimer = 4;
+    this.pebbleRing = null;
   }
 
   start() {
@@ -87,7 +89,16 @@ export class Game {
       this.levelTime += dt;
       this.messageTimer -= dt;
       const pebble = this.player.update(dt, input, this.world, this.sounds);
-      if (pebble) for (const g of this.guards) g.hearNoise(pebble.x, pebble.y, this.world);
+      // A pebble rings where it lands, so the distraction reads: wardens
+      // in earshot turn toward the ring, and the player sees why.
+      if (pebble) {
+        this.pebbleRing = { x: pebble.x, y: pebble.y, age: 0 };
+        for (const g of this.guards) g.hearNoise(pebble.x, pebble.y, this.world);
+      }
+      if (this.pebbleRing) {
+        this.pebbleRing.age += dt;
+        if (this.pebbleRing.age > PEBBLE_RING_SECONDS) this.pebbleRing = null;
+      }
       // Running footsteps can be heard: a guard turns to investigate.
       if (this.player.footstepLoud) {
         for (const g of this.guards) {

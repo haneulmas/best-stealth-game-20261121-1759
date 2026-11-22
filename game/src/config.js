@@ -27,6 +27,7 @@ export const DETECT_DECAY = 30; // meter per second when unseen
 export const ALARM_SECONDS = 6; // how long a full meter keeps the alarm up
 export const PEBBLE_RANGE = 340; // how far a thrown pebble can land
 export const PEBBLE_COUNT = 3; // per level
+export const PEBBLE_RING_SECONDS = 1.4; // how long the landing ring shows
 
 export const COLORS = {
   // The archive watches: deep teal stone, violet shelf-walls, gold light.

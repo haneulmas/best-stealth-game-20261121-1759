@@ -17,9 +17,10 @@ export function applyShot(game, params) {
     game.start();
     game.loadLevel(1); // The Stacks: four patrols, shelves, shadow nooks
     game.state = 'playing';
-    // Wren crouched behind a crate, a cone crossing just ahead of her.
-    game.player.x = 15 * 40 + 20;
-    game.player.y = 11 * 40 + 20;
+    // Wren crouched in shadow, a cone sweeping the patch's edge, a pebble
+    // still ringing where it landed. Almost seen, not caught.
+    game.player.x = 20 * 40 + 20;
+    game.player.y = 14 * 40 + 20;
     game.player.sneaking = true;
     game.guards[0].x = 14 * 40 + 20;
     game.guards[0].y = 8 * 40 + 20;
@@ -31,11 +32,13 @@ export function applyShot(game, params) {
     game.guards[2].x = 10 * 40 + 20;
     game.guards[2].y = 13 * 40 + 20;
     game.guards[2].facing = -Math.PI / 2;
-    game.guards[3].x = 27 * 40 + 20;
-    game.guards[3].y = 13 * 40 + 20;
+    game.guards[3].x = 25 * 40 + 20;
+    game.guards[3].y = 11 * 40 + 20;
     game.guards[3].facing = Math.PI;
+    // Frozen mid-ring: the shot is staged, so the age never advances.
+    game.pebbleRing = { x: 18 * 40 + 20, y: 12 * 40 + 20, age: 0.45 };
     game.detection = 38;
-    game.message = 'A warden patrols the Stacks. Wait for the cone to pass.';
+    game.message = 'A pebble rings in the dark. The warden turns.';
     game.messageTimer = 99;
     return true;
   }
@@ -49,9 +52,11 @@ export function applyShot(game, params) {
     game.guards[0].y = 8 * 40 + 20;
     game.guards[0].facing = 0;
     game.guards[0].state = 'chase';
-    game.guards[1].x = 18 * 40 + 20;
-    game.guards[1].y = 10 * 40 + 20;
+    // A second warden closes from the right: Wren caught between two cones.
+    game.guards[1].x = 17 * 40 + 20;
+    game.guards[1].y = 8 * 40 + 20;
     game.guards[1].facing = Math.PI;
+    game.guards[1].state = 'chase';
     game.detection = 100;
     game.alarm = true;
     game.alarmTimer = 5;
