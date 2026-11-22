@@ -4,7 +4,7 @@
 // fills it; at 100 the alarm sounds, guards chase, and a catch costs
 // a life and restarts the level.
 import {
-  DETECT_BASE, DETECT_CLOSE_BONUS, DETECT_RUN_BONUS, DETECT_LIGHT_BONUS,
+  TILE, DETECT_BASE, DETECT_CLOSE_BONUS, DETECT_RUN_BONUS, DETECT_LIGHT_BONUS,
   DETECT_SHADOW_FACTOR, DETECT_DECAY, ALARM_SECONDS,
   HEARING_RANGE, SNEAK_HEARING_RANGE, PEBBLE_RING_SECONDS,
   SMOKE_SECONDS,
@@ -111,6 +111,31 @@ export class Game {
       if (this.world.smoke) {
         this.world.smoke.age += dt;
         if (this.world.smoke.age > SMOKE_SECONDS) this.world.smoke = null;
+      }
+      // Snuff (E): pinch out the nearest lamp beside Wren, so its light
+      // stops giving her away. Each lamp only once, so she chooses which
+      // light to kill; the dark tile stays dark for the whole level.
+      if (input.wasPressed('e')) {
+        const tx = Math.floor(this.player.x / TILE);
+        const ty = Math.floor(this.player.y / TILE);
+        let best = null;
+        let bestD = Infinity;
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            const nx = tx + dx;
+            const ny = ty + dy;
+            if (this.world.grid[ny]?.[nx] !== 'o') continue;
+            if (this.world.snuffed.has(nx + ',' + ny)) continue;
+            const d = Math.hypot(this.player.x - (nx * TILE + TILE / 2), this.player.y - (ny * TILE + TILE / 2));
+            if (d < bestD) { bestD = d; best = nx + ',' + ny; }
+          }
+        }
+        if (best) {
+          this.world.snuffed.add(best);
+          this.sounds.snuff();
+          this.message = 'Lamp snuffed. The dark is yours.';
+          this.messageTimer = 2;
+        }
       }
       // Running footsteps can be heard: a guard turns to investigate.
       if (this.player.footstepLoud) {

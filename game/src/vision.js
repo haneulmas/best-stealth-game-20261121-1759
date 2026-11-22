@@ -57,4 +57,8 @@ export function canSee(world, guard, px, py) {
 }
 
 export function isShadowTile(world, px, py) { return tileAt(world, px, py) === 's'; }
-export function isLitTile(world, px, py) { return tileAt(world, px, py) === 'o'; }
+// A snuffed lamp is dark: it no longer gives the player away.
+export function isLitTile(world, px, py) {
+  if (tileAt(world, px, py) !== 'o') return false;
+  return !world.snuffed.has(Math.floor(px / TILE) + ',' + Math.floor(py / TILE));
+}

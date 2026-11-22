@@ -77,7 +77,7 @@ function frame(now) {
     ], '#e05a4e');
   } else if (game.state === 'victory') {
     renderer.drawCenterPanel(`THE ARCHIVE IS YOURS: ${game.rating()}`, [
-      'All four levels cleared. Every relic is Wren\u2019s now.',
+      'All five levels cleared. Every relic is Wren\u2019s now.',
       `Alarms: ${game.alarms}  •  Caught: ${game.catches}  •  Time ${game.formatTime(game.elapsed)}`,
       'Press Enter to play again.',
     ], '#ffd94d');

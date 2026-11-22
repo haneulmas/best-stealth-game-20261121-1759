@@ -68,19 +68,28 @@ export class Renderer {
               ctx.fillText('SHADOW', px + TILE / 2, py + TILE / 2 + 3);
             }
           } else if (t === 'o') {
-            // Lamplight flickers: two sines out of phase, so the bright
-            // tiles are never quite steady and the light/dark choice reads.
-            const pulse = 0.10 + 0.05 * Math.sin(time * 2 + x) + 0.05 * Math.sin(time * 6.7 + x * 2.3);
-            ctx.fillStyle = `rgba(247, 201, 72, ${pulse})`;
-            ctx.fillRect(px, py, TILE, TILE);
-            ctx.fillStyle = 'rgba(247, 201, 72, 0.10)';
-            ctx.beginPath();
-            ctx.arc(px + TILE / 2, py + TILE / 2, 16 + 6 * Math.sin(time * 6.7 + x), 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = 'rgba(247, 201, 72, 0.55)';
-            ctx.beginPath();
-            ctx.arc(px + TILE / 2, py + TILE / 2, 5, 0, Math.PI * 2);
-            ctx.fill();
+            if (world.snuffed.has(x + ',' + y)) {
+              // A snuffed lamp stays dark: a faint cold dot, no light left
+              // to give the player away.
+              ctx.fillStyle = 'rgba(120, 130, 140, 0.35)';
+              ctx.beginPath();
+              ctx.arc(px + TILE / 2, py + TILE / 2, 4, 0, Math.PI * 2);
+              ctx.fill();
+            } else {
+              // Lamplight flickers: two sines out of phase, so the bright
+              // tiles are never quite steady and the light/dark choice reads.
+              const pulse = 0.10 + 0.05 * Math.sin(time * 2 + x) + 0.05 * Math.sin(time * 6.7 + x * 2.3);
+              ctx.fillStyle = `rgba(247, 201, 72, ${pulse})`;
+              ctx.fillRect(px, py, TILE, TILE);
+              ctx.fillStyle = 'rgba(247, 201, 72, 0.10)';
+              ctx.beginPath();
+              ctx.arc(px + TILE / 2, py + TILE / 2, 16 + 6 * Math.sin(time * 6.7 + x), 0, Math.PI * 2);
+              ctx.fill();
+              ctx.fillStyle = 'rgba(247, 201, 72, 0.55)';
+              ctx.beginPath();
+              ctx.arc(px + TILE / 2, py + TILE / 2, 5, 0, Math.PI * 2);
+              ctx.fill();
+            }
           }
         }
         if (t === 'X') {
@@ -123,6 +132,7 @@ export class Renderer {
       ],
       [{ x: 13 * TILE + 20, y: 8 * TILE + 20, vertical: true }],
       [{ x: 15 * TILE + 20, y: 5 * TILE + 20, vertical: true }],
+      [{ x: 26 * TILE + 20, y: 7 * TILE + 20, vertical: true }],
     ][game.levelIndex];
     if (shelfEyes) spots.push(...shelfEyes);
     // Alarm eyes: only while the alarm sounds, on walls the level has.
@@ -135,6 +145,7 @@ export class Renderer {
         ],
         [{ x: 18 * TILE + 20, y: 8 * TILE + 20, vertical: true }],
         [{ x: 23 * TILE + 20, y: 13 * TILE + 20, vertical: true }],
+        [{ x: 3 * TILE + 20, y: 8 * TILE + 20, vertical: true }],
       ][game.levelIndex];
       if (alarmEyes) spots.push(...alarmEyes);
     }
@@ -402,7 +413,7 @@ export class Renderer {
     ctx.font = '13px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(
-      'WASD / arrows move  •  Shift sneak  •  Click throw a pebble  •  Q smoke  •  P pause  •  M mute  •  Hide in SHADOW, avoid lamplight',
+      'WASD / arrows move  •  Shift sneak  •  Click throw a pebble  •  Q smoke  •  E snuff a lamp  •  P pause  •  M mute  •  Hide in SHADOW, avoid lamplight',
       VIEW_W / 2, VIEW_H - 11,
     );
   }
@@ -477,17 +488,17 @@ export class Renderer {
     ctx.fillText('THE STARLING ARCHIVE', VIEW_W / 2, 300);
     ctx.fillStyle = '#58c4dc';
     ctx.font = '20px sans-serif';
-    ctx.fillText('A stealth game in four nights. The archive is watching', VIEW_W / 2, 340);
+    ctx.fillText('A stealth game in five nights. The archive is watching', VIEW_W / 2, 340);
     ctx.fillStyle = COLORS.muted;
     ctx.font = '16px sans-serif';
     ctx.fillText('You are Wren, night courier. Steal the relics. Never be seen.', VIEW_W / 2, 380);
     ctx.fillText('Guards patrol with vision cones. Crates block their sight, shadow hides you.', VIEW_W / 2, 406);
     ctx.fillStyle = COLORS.text;
     ctx.font = 'bold 18px sans-serif';
-    ctx.fillText('Press ENTER to begin  •  WASD move  •  Shift sneak  •  Click throw a pebble  •  Q smoke', VIEW_W / 2, 470);
+    ctx.fillText('Press ENTER to begin  •  WASD move  •  Shift sneak  •  Click throw a pebble  •  Q smoke  •  E snuff a lamp', VIEW_W / 2, 470);
     ctx.fillStyle = COLORS.muted;
     ctx.font = '14px sans-serif';
-    ctx.fillText('4 levels  •  6 wardens at most  •  Ghost rating if no alarm ever sounds', VIEW_W / 2, 510);
+    ctx.fillText('5 levels  •  6 wardens at most  •  Ghost rating if no alarm ever sounds', VIEW_W / 2, 510);
   }
 
   drawWorld(game, time) {

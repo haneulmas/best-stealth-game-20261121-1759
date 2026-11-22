@@ -1,4 +1,4 @@
-// The Starling Archive: the four levels.
+// The Starling Archive: the five levels.
 // Each level is built from rectangles instead of hand-counted ASCII maps,
 // so a wall is never one tile off. Legend used by the builder:
 //   '#' wall (blocks movement and sight)   'X' crate (blocks movement and sight)
@@ -120,6 +120,29 @@ export const LEVELS = [
       { spawn: [26, 9], waypoints: [[26, 9], [26, 14], [21, 14], [21, 9]], speed: 100 },
       { spawn: [5, 5], waypoints: [[5, 5], [5, 13], [9, 13], [9, 5]], speed: 96 },
       { spawn: [24, 6], waypoints: [[24, 6], [24, 11], [18, 11], [18, 6]], speed: 104 },
+    ],
+  }),
+  buildLevel({
+    name: 'Level 5: The Belfry',
+    subtitle: 'Six wardens, four relics. The belfry never sleeps.',
+    start: [2, 2],
+    exit: [29, 15],
+    relics: [[5, 2], [27, 6], [12, 12], [24, 16]],
+    paint: [
+      [3, 4, 20, 1, '#'], [9, 9, 20, 1, '#'], [3, 14, 20, 1, '#'], // belfry floors, gaps at alternating ends
+      [26, 5, 1, 5, '#'], // right stub, rows 5-9 (shelf eye wall)
+      [3, 6, 1, 5, '#'], // left stub, rows 6-10 (alarm eye wall)
+      [12, 6, 2, 1, 'X'], [20, 12, 2, 1, 'X'], [17, 11, 2, 1, 'X'], [22, 2, 2, 1, 'X'], // crate cover
+      [3, 2, 2, 2, 's'], [16, 6, 3, 2, 's'], [26, 11, 3, 2, 's'], [10, 15, 3, 1, 's'], // shadow nooks
+      [7, 2, 2, 2, 'o'], [21, 5, 2, 2, 'o'], [14, 11, 2, 2, 'o'], [27, 15, 2, 2, 'o'], // lamplight
+    ],
+    guards: [
+      { spawn: [6, 2], waypoints: [[6, 2], [6, 3], [14, 3], [14, 2]], speed: 100 },
+      { spawn: [27, 3], waypoints: [[27, 3], [27, 6], [29, 6], [29, 3]], speed: 104 },
+      { spawn: [10, 7], waypoints: [[10, 7], [16, 7], [16, 8], [10, 8]], speed: 96 },
+      { spawn: [29, 8], waypoints: [[29, 8], [29, 12], [27, 12], [27, 8]], speed: 100 },
+      { spawn: [6, 12], waypoints: [[6, 12], [14, 12], [14, 11], [6, 11]], speed: 96 },
+      { spawn: [5, 15], waypoints: [[5, 15], [25, 15], [25, 16], [5, 16]], speed: 104 },
     ],
   }),
 ];
